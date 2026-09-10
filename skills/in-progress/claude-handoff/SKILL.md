@@ -1,13 +1,15 @@
 ---
 name: claude-handoff
-description: Hand the current conversation off to a fresh background agent that picks up the work immediately.
+description: Prepare a conversation handoff, optionally starting a Claude background agent on explicit request.
 argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-Write a handoff summary of the current conversation so a fresh agent can continue the work. Instead of saving it, launch a background agent seeded with the summary as its prompt: `claude --bg --name "<descriptive name>" "<handoff summary>"`. It starts in the current working directory and returns immediately; the user manages it with `claude agents`.
+Write a handoff summary of the current conversation. By default, save it to the OS temporary directory and return the path, keeping execution in the current agent. Launch a Claude background agent only when the user explicitly requests that launch; invoking this skill alone does not request delegation. A delegated agent prepares the summary directly without launching another agent.
 
-Always pass `-n`/`--name` with a descriptive name (e.g. `--name "Fix login bug"`); it sets the display name shown in the job list, session picker, and terminal title.
+For an explicitly requested launch, use `claude --bg --name "<descriptive name>" "<handoff summary>"` only when the Claude CLI supports it. It starts in the current working directory; the user manages it with `claude agents`. If the CLI is unavailable, return the saved summary and report that launch did not occur. Tell the receiving agent to execute its assigned work directly without further delegation.
+
+When launching, pass `-n`/`--name` with a descriptive name (e.g. `--name "Fix login bug"`); it sets the display name shown in the job list, session picker, and terminal title.
 
 Include a "suggested skills" section in the summary, naming which skills the next agent should call the Skill tool for.
 

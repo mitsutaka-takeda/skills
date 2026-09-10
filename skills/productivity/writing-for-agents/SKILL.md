@@ -7,6 +7,16 @@ Reference for writing any document an agent consumes: a skill, an `AGENTS.md` / 
 
 When the document you're writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
 
+## Execution defaults
+
+Write the intended outcome, constraints and completion criteria; let the agent choose routine implementation steps. User instructions and existing authorization take precedence over skill guidelines. Reuse settled decisions and ask only when missing information materially changes the result; complete independent authorized work while a required answer is pending.
+
+Skills operate in the current agent by default. Delegation requires an explicit user request for multi-agent work on the task; invoking a skill, a large task, or the availability of agent tools is not such a request. Give an optional delegated task a bounded scope, source paths and completion criteria. A delegated agent completes its assignment directly without further delegation. Parallel tool calls are distinct from spawning agents.
+
+Keep progress updates and final reports concise and evidence-based. Scale verification to the change and required checks; repeat or expand it only when changes, failures or unresolved risks justify it. Consult supporting references only when their branch applies.
+
+These defaults adapt the [GPT-6 Astra prompting guidance](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) to this collection. Single-agent execution is this collection's preference, not a limitation of the model. Skills do not set the harness model or reasoning effort.
+
 ## Context pointers
 
 A **context pointer** is a reference held in the agent's context that names some out-of-context material and encodes the condition for reaching it. A skill's description is one; a line in `AGENTS.md` naming a doc is the same object. The pointer's _wording_, not its target, decides when the agent reaches the material, and how reliably. A must-have target behind a weakly worded pointer is a variance bug: sharpen the wording first, and inline the material only if sharpening fails.
