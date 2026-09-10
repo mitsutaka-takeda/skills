@@ -1,35 +1,26 @@
 ---
 name: implement-spec
-description: "Implement a specification in code."
+description: "Implement a specification and its dependency-ordered tickets on one PR branch, using a single agent by default."
 disable-model-invocation: true
 ---
 
-You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
+Implement the supplied spec and its tickets as one reviewable PR. The tickets form a **task graph**: the **frontier** contains incomplete tickets whose blockers are complete.
 
-The goal is a PR which implements the entire spec on a single branch.
+Use the current agent for research, implementation, integration, review and fixes. Delegate only when the user explicitly requests multi-agent work for this task; invoking this skill alone does not request delegation.
 
-The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
+## Process
 
-Communication to and from subagents should be sparse. Communicate primarily through **context pointers**: to the spec, tickets, research notes, and previous commits. Don't duplicate information already available via pointers.
+1. Read the spec and ticket dependencies. Reuse the decisions and authorization already given. Ask only about missing requirements that materially affect the result; continue independent work while awaiting an answer.
+2. Research the relevant code and documentation as needed. Reuse concise notes and source paths across tickets instead of repeating the exploration.
+3. Create the PR branch. Once it has a meaningful change, push and open a draft PR linking the spec and tickets it will close.
+4. Implement one frontier ticket at a time on that branch. Run relevant tests and required checks, record completion, then recompute the frontier. If no ticket is ready while work remains, report the actual blocker rather than marking the spec complete.
+5. Review the completed branch against its base using /code-review in the current agent. Resolve substantiated in-scope findings; rerun affected checks after fixes. Complete repository-required checks, expanding verification only for uncovered risks or failures.
+6. Reconcile the result with every acceptance criterion, update the PR description and validation evidence, then mark it ready for review when required checks pass. Report remaining blockers honestly.
 
-**Implementer subagents** should be run in the background where possible for **maximum concurrency**.
+## Explicit multi-agent mode
 
-## Steps
+When the user requests delegation, assign only independent frontier tickets to sub-agents, each with ownership of its files or module and a separate worktree and branch. Share the spec, ticket and relevant source paths. Tell each worker that others are working in the codebase, to preserve their changes, and to implement its assigned ticket directly without further delegation.
 
-1. Read the spec and tickets. Read enough to understand the task graph.
+The current agent integrates completed branches, resolves conflicts using their intent, updates the frontier, and performs the final review and fixes. A task that cannot be isolated safely stays sequential. Follow the requested agent count and available capacity; use one agent if delegation is unavailable and disclose that limitation.
 
-2. (optional) Use an **exploration subagent** to conduct any exploration required by the tickets - relevant codebase files or external documentation. Ensure the exploration subagent can save files - it should save its markdown notes in a directory outside the repo, accessible by all future subagents. This lets **implementer subagents** focus on implementation rather than exploration.
-
-3. Create a branch, and a draft PR. The PR should be marked as 'closing' the spec issue and tickets.
-
-4. Use **implementer subagents** to implement each ticket. Each implementer subagent should work in its own worktree, on its own branch.
-
-5. Once an **implementer subagent** completes, merge its work to the PR branch with a **merger subagent**.
-
-6. If this changes the **frontier** of available tickets, kick off more **implementer subagents** to work on the new tickets. This allows for maximum concurrency.
-
-7. Once all tickets are complete, run /code-review on the PR branch. Fix all issues raised by the code review in a single **implementer subagent**.
-
-8. Mark the PR as ready for review.
-
-9. Clean up all **implementer subagent** worktrees.
+Clean up only task-created worktrees after their work is integrated and no uncommitted changes remain, subject to the user's deletion permissions.
