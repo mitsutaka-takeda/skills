@@ -45,6 +45,8 @@ Two things steer what you get taught. The **mission** (the concrete real-world r
 
 It is also why the skill pushes back rather than obliges. A question that needs **wisdom** (real-world judgement) gets an attempted answer and then a pointer to a community where you can test it. A quiz is a gate, not a formality: one user reported saying "thanks a lot" and being told the drill was still live.
 
+Quiz choices use comparable detail and presentation so length or formatting does not give away the answer. They can differ in word count when natural wording requires it.
+
 ## Lessons, references and components
 
 A **lesson** is one self-contained HTML file, short enough to finish in a sitting, tied to the mission, giving one tangible win. It cites its sources, recommends one primary source to go and read yourself, and links to sibling lessons and reference documents.

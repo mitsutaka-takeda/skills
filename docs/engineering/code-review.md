@@ -1,6 +1,6 @@
 ## What it does
 
-`code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** asks whether the code follows how this repo writes code. **Spec** asks whether the code does what the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec) asked for. One agent reviews Standards and then Spec with separate notes by default. Independent [sub-agents](https://www.aihero.dev/ai-coding-dictionary/subagent) are used only when you explicitly request them.
+`code-review` reviews the requested PR, branch or working-tree changes along two axes. The comparison includes uncommitted changes and in-scope untracked files when those are part of the request. **Standards** asks whether the code follows how this repo writes code. **Spec** asks whether the code does what the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec) asked for. One agent reviews Standards and then Spec with separate notes by default. Independent [sub-agents](https://www.aihero.dev/ai-coding-dictionary/subagent) are used only when you explicitly request them.
 
 The two axes are never merged and never re-ranked. The report ends with a worst issue *per axis* and refuses to name a single winner across them, because a change can pass one axis and fail the other: code that follows every convention while implementing the wrong thing passes Standards and fails Spec; code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked while breaking the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
@@ -17,20 +17,15 @@ Type `/code-review`, or the agent reaches for it automatically when you ask to r
 | The whole codebase has drifted, not one diff | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) |
 | Something is broken and you do not know why | [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) |
 
-Supply the fixed point, or use one already established in the conversation. The agent checks that the ref resolves and the diff is non-empty before reviewing.
+Supply a comparison or reuse one already established in the conversation. For a PR, the agent obtains its base and head and records their resolved commits. It asks only when the scope cannot be determined, and checks that the selected changes are non-empty before reviewing.
 
 ## Prerequisites
 
 The Standards axis needs nothing. It reads whatever the repo documents (`CODING_STANDARDS.md`, `CONTRIBUTING.md`, and the like) and falls back on a built-in baseline when the repo documents nothing.
 
-The Spec axis needs a spec to exist and be findable. It looks in this order:
+The Spec axis uses the requirements you supplied first, whether a file, issue or agreed conversation. Without an explicit source, it looks for linked requirements in the PR or commits and relevant local spec files. It asks when the source is missing or requirements materially conflict, while continuing the Standards pass.
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, a GitLab `!67`), fetched through `docs/agents/issue-tracker.md`.
-2. A path you pass in as an argument.
-3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch or feature name.
-4. Asking you.
-
-Step 1 depends on `docs/agents/issue-tracker.md`, which [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) writes. Without it the axis still works if you hand it a path. With no spec at all, the Spec pass is skipped and the report says "no spec available" rather than inventing requirements.
+Tracker configuration helps retrieve linked issues, but a supplied spec works without setup. With no spec available, the report marks the Spec pass as skipped rather than inventing requirements.
 
 ## The two axes
 

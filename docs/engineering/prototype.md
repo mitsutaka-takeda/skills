@@ -2,7 +2,7 @@
 
 `prototype` writes **throwaway code that answers a question**: does this state model feel right, or what should this screen look like. The question comes first and decides the shape of everything that follows; a prototype that answers the wrong question is pure waste, however good it looks.
 
-Throwaway is a constraint on how the code is *written*, not a promise to destroy it. No tests, no error handling beyond what makes it run, no abstractions, no persistence, because none of that helps you learn the one thing you're trying to learn. What survives is the answer, folded into the real code, and the prototype itself, parked on a branch out of main as the evidence the answer came from.
+Throwaway is a constraint on how the code is *written*, not a promise to destroy it. No tests, no error handling beyond what makes it run, no abstractions, no persistence, because none of that helps you learn the one thing you're trying to learn. What survives is the recorded answer and the prototype itself, parked on a branch out of main as evidence. The answer is applied to real code only when implementation is also requested.
 
 ## When to reach for it
 
@@ -25,7 +25,7 @@ Both keep state in memory, start with no thinking required, and show you the ful
 
 A finished prototype leaves two things, and they go to different places.
 
-The **answer** (the verdict plus the question it settled) is captured durably: a commit message, an ADR, the implementation issue. That is what the main branch keeps, folded into the real code.
+The **answer** (the verdict plus the question it settled) is captured durably: a commit message, an ADR, the implementation issue. A prototype-only request ends with that answer and the runnable artifact. When implementation is also requested, the validated decision is applied to real code.
 
 The **prototype** is the runnable evidence the answer came from, and it is not deleted. It doesn't belong in main either: there is nothing there to maintain and it rots fast. So it is committed to a throwaway `prototype/<name>` branch out of main, never merged, with a [context pointer](https://www.aihero.dev/ai-coding-dictionary/context-pointer) to that branch left on the implementation issue. Main stays clean; the exploration stays findable and re-runnable by whoever picks the work up next.
 
@@ -44,7 +44,7 @@ Known, and it is a naming problem. `prototype` is a generic, appealing word that
 That is a different artifact wearing this skill's name. A prototype here is scoped to one question, and "what is the whole app?" isn't one. A full-app prototype has no natural stopping point, so it becomes the production app by momentum: the cleanup pass never happens, and code written under prototype rules (no tests, no error handling) ends up in front of users. If you need a sales demo, build it deliberately as a demo and be explicit that none of it is production. If you need to settle a design question, cut it down to that question.
 
 **How do I run it in its own session?**
-A prototype lives in its own directory and generates a lot of [context](https://www.aihero.dev/ai-coding-dictionary/context) you don't want in the thread that asked the question, so run it somewhere else and bring back only the answer. [handoff](https://aihero.dev/skills-handoff) is the bridge in both directions.
+Continue in the same session when its [context](https://www.aihero.dev/ai-coding-dictionary/context) is useful. If the prototype needs a separate session or directory, use [handoff](https://aihero.dev/skills-handoff) to carry the question there and the findings back.
 
 **Isn't this the fastest possible way to burn tokens?**
 It can be, if you prototype questions you could have answered by talking, or let one prototype sprawl across a whole feature. The comparison that matters isn't tokens against zero; it's [tokens](https://www.aihero.dev/ai-coding-dictionary/token) against building the wrong state model and finding out after it has production callers. Keep the question narrow and the run short, and the spend stays proportionate.
@@ -56,7 +56,7 @@ It can be, if you prototype questions you could have answered by talking, or let
 - Someone says "wait, that shouldn't be possible" or "huh, I assumed X". That's a bug in the *idea*, which is the entire point.
 - The UI variants disagree about layout and information hierarchy, not just colour and copy, and the feedback you get is "the header from B with the sidebar from C".
 - It is answered in one sitting. If you're still building it a day later, the question was too big; split it.
-- When it's over, main contains the decision and none of the prototype, and the implementation issue points at the branch that still holds it.
+- The runnable prototype and its answer are findable. Real code changes only when implementation was requested, and the throwaway demo stays out of main.
 
 ## Where it fits
 

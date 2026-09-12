@@ -1,9 +1,9 @@
 ---
 name: code-review
-description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Reviews both axes in one agent by default and reports them separately. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
+description: "Review a PR, branch, or working-tree diff against repository standards and the supplied requirements."
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Two-axis review of the changes the user asks to assess:
 
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
@@ -14,22 +14,23 @@ Use `docs/agents/issue-tracker.md` when available to locate linked issues. A sup
 
 ## Process
 
-### 1. Pin the fixed point
+### 1. Pin the review scope
 
-Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, ask for it.
+Use the comparison the user supplied or already established in the conversation. For a PR, obtain its base and head from PR metadata and resolve the matching commits locally; ask only if the intended range remains ambiguous or cannot be obtained. Record the resolved SHAs so a moving branch name does not silently change the review.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+Choose the diff that includes the requested work:
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. Report a bad ref or empty diff before starting the review.
+- **Committed branch or PR changes:** use `git diff <base-sha>...<head-sha>` and `git log <base-sha>..<head-sha> --oneline`.
+- **All uncommitted tracked changes:** use `git diff HEAD`; for staged-only or unstaged-only requests, use `git diff --cached` or `git diff` respectively.
+- **Branch changes plus working-tree changes:** resolve the merge-base of the base and HEAD, then use `git diff <merge-base-sha>`.
+
+For working-tree reviews, inspect `git status --short` and read in-scope untracked files separately, since diff commands omit them. Preserve a snapshot of the reviewed diff or recheck it if the working tree changes during review. Report unavailable refs or an empty scope before proceeding.
 
 ### 2. Identify the spec source
 
-Look for the originating spec, in this order:
+Use the requirements the user explicitly supplied, including an agreed conversation, file or issue. When no source is given, look for linked requirements in the PR or commit messages and relevant spec files under `docs/`, `specs/` or `.scratch/`. Use the configured issue-tracker workflow when needed.
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in `docs/agents/issue-tracker.md`.
-2. A path the user passed as an argument.
-3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. Continue the Standards pass while awaiting a source. If no spec is available, mark Spec as "no spec available" rather than inventing requirements.
+Ask only when the source is still missing or sources materially conflict. Continue the Standards pass while awaiting clarification. If no spec is available, mark Spec as "no spec available" rather than inventing requirements.
 
 ### 3. Identify the standards sources
 
@@ -57,14 +58,14 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Review both axes
 
-Read the diff and commit list once, then perform these passes using the sources gathered above:
+Read the selected diff, any in-scope untracked files and the applicable commit list once, then perform these passes using the sources gathered above:
 
 - **Standards:** report documented violations with the standards file and rule, and possible baseline smells with their name and relevant hunk. Distinguish violations from judgement calls; repo standards override the baseline. Skip rules enforced by tooling.
 - **Spec:** report missing or partial requirements, unrequested behaviour, and incorrectly implemented requirements. Cite the requirement and the affected code for each finding. If no spec is available, mark this pass as skipped.
 
 Keep each pass concise, normally under 400 words, while retaining evidence needed to assess each finding. A clean pass is a valid result; do not manufacture findings to fill a quota.
 
-If the user explicitly requests parallel reviewers, assign one pass to each of at most two sub-agents. Supply the fixed point, diff command, commit list, relevant source paths and pass criteria. Each reviewer reads only what its pass needs and reports directly; it must not invoke this skill recursively or delegate further. If delegation is unavailable, perform both passes yourself and disclose that they were not independently reviewed.
+If the user explicitly requests parallel reviewers, assign one pass to each of at most two sub-agents. Supply the resolved review scope, diff or snapshot, applicable commit list, relevant source paths and pass criteria. Each reviewer reads only what its pass needs and reports directly; it must not invoke this skill recursively or delegate further. If delegation is unavailable, perform both passes yourself and disclose that they were not independently reviewed.
 
 ### 5. Aggregate
 
