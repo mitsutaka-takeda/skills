@@ -25,11 +25,11 @@ Reach for it when the build is too big for one agent [session](https://www.aiher
 
 The spec exists because context windows end. Everything you settled while [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) (the shape of the solution, the choices you argued through, what you deliberately refused) is in one conversation that is about to be cleared. The spec is what survives that.
 
-So it does not validate anything, and it does not decide anything. It captures what was decided, in your project's own vocabulary, so that a fresh session can pick the work up without you re-explaining it. Anything the spec asserts that you never actually said is a defect.
+It checks that the record matches the settled requirements and surfaces unresolved design decisions without inventing answers. It captures what was decided, in your project's own vocabulary, so that a fresh session can pick the work up without you re-explaining it. Anything the spec asserts that you never actually said is a defect.
 
 ## Seams before prose
 
-Before it writes a word, `to-spec` sketches the **seams** the feature will be tested at, and checks them with you. It prefers seams that already exist to new ones, and takes the highest seam it can: the ideal number across a change is one.
+`to-spec` records the **seams** the feature will be tested at. It reuses seams already agreed in the conversation or supplied spec, preferring existing interfaces. It asks only when selecting or changing a seam needs an unresolved design decision, and drafts the settled parts while waiting.
 
 Those agreed seams then travel. [tdd](https://aihero.dev/skills-tdd) works only at pre-agreed seams, and [code-review](https://aihero.dev/skills-code-review) reviews the diff against the spec, so a seam nobody agreed to shows up as a review finding. The binding is indirect: it runs through this document, which is exactly why the seam conversation is worth taking seriously here rather than deferring it to implementation.
 
@@ -48,7 +48,7 @@ Often you should; the spec earns its step only on multi-session work. Where it p
 The main map issue: `/to-spec #<map_issue>`, not the individual decision tickets. [wayfinder](https://aihero.dev/skills-wayfinder) produces decisions rather than deliverables, scattered across a map; `to-spec` is the step that collapses them into one buildable document. Looping the map straight into `/implement` throws that collapse away.
 
 **Is the spec for me to review, or is it just for the agent?**
-Mostly for the agent, and it reads that way: complete, dense, reference-heavy. The parts worth your eyes are the seams and the out-of-scope section, because those are the two places a wrong decision is cheapest to catch and most expensive to discover later. Reading the whole thing end to end is a real complaint people have, and there is no summary mode: the honest answer is that if the spec surprises you, the grilling was too shallow, not the spec too long.
+It is a durable input for implementation that you can review. User stories cover the agreed actors and behaviours without duplicates or a length target. Check the seams and out-of-scope section especially: a wrong boundary there affects both implementation and verification.
 
 **Do I keep the spec frozen once tickets start, or let the agent rewrite it?**
 Nothing keeps it in sync, so in practice it is a snapshot of what you knew at that moment, and it goes stale the first time implementation teaches you something. Treat it as throwaway once the work ships. The artifacts meant to outlive it are your `CONTEXT.md` and your ADRs; if something learned during implementation deserves to last, it belongs there, not in an edited spec.
@@ -60,12 +60,12 @@ Less well, and this is a known limitation. The template leans hard on user stori
 No to both. It reads and respects the ADRs covering the area it touches, but it doesn't link them, and it doesn't search the tracker for overlapping issues before drafting, so a spec can quietly duplicate work someone already filed. Search the tracker yourself first if the area is busy.
 
 **`/to-tickets` couldn't read my spec: it kept truncating.**
-Very large specs can outgrow what a tracker issue will serve back cleanly, and there is no local copy to fall back on. The fix is context hygiene: don't [clear](https://www.aihero.dev/ai-coding-dictionary/clearing) or [compact](https://www.aihero.dev/ai-coding-dictionary/compaction) between `/to-spec` and `/to-tickets`. Run them in the same window and the spec never has to be re-fetched at all.
+Very large specs can outgrow what a tracker issue will serve back cleanly, and there is no local copy to fall back on. Continue in the same context when it remains useful. If compaction is needed, preserve the settled decisions and source location so the next phase can retrieve the relevant details.
 
 ## It's working if
 
 - It starts writing rather than asking you a fresh round of questions.
-- It puts the seams to you before it writes, and proposes as few as it can get away with.
+- It records agreed seams without reconfirming them and flags any unresolved interface decision before publishing.
 - It comes back in your project's nouns, not generic product-management boilerplate.
 - Every decision in it is one you can remember making. Nothing was invented to fill a section.
 - The out-of-scope section has real things in it: the things you refused are usually the most useful lines on the page.

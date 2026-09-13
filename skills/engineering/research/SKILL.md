@@ -1,6 +1,6 @@
 ---
 name: research
-description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or a cited research note produced.
+description: "Investigate a scoped question using primary sources and save a cited research note."
 ---
 
 Research in the current agent by default. Delegate only when the user explicitly requests a background agent or multi-agent work for this task. Invoking this skill alone does not request delegation. A delegated researcher follows the steps below directly and does not spawn another agent.

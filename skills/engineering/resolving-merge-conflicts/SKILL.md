@@ -11,4 +11,4 @@ description: "Use when you need to resolve an in-progress git merge/rebase confl
 
 4. Discover the project's **automated checks** and run them, typically typecheck, then tests, then format. Fix anything the merge broke.
 
-5. **Finish the merge/rebase.** Stage everything and commit. If rebasing, continue the rebase process until all commits are rebased.
+5. **Finish the merge/rebase.** Stage only the resolved files needed for this operation, preserving unrelated user changes. Check the staged diff before committing; if unrelated pre-staged changes would enter the commit, isolate the operation safely or ask how to handle them. If rebasing, continue the rebase process until all commits are rebased.
